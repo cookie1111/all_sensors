@@ -15,7 +15,7 @@ def prepare_LSL_streaming(tags):
     print("Starting LSL streaming")
     for tag in tags:
         print(f"creating stream {tag}")
-        infoTag = pylsl.StreamInfo(tag,'Tag',1,channel_format='int32',source_id='Task_tag');
+        infoTag = pylsl.StreamInfo(tag,'Tag',1,nominal_srate=64,channel_format='int32',source_id='Task_tag');
         outletTag = pylsl.StreamOutlet(infoTag)
         LSL_streams[tag] = (infoTag,outletTag)
     return LSL_streams
