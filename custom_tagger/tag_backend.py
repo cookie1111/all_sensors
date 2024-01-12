@@ -27,3 +27,5 @@ def stream(button):
     
     timestamp = time.time()
     LSL_streams[button][1].push_sample([1],timestamp=timestamp) 
+    time.sleep(0.2)
+    LSL_streams[button][1].push_sample([0],timestamp=timestamp)
