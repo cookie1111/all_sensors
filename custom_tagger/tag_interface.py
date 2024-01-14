@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLineEdit, QGridLayout, QHBoxLayout
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 import tag_backend 
 
 class ButtonCreator(QWidget):
@@ -8,6 +8,7 @@ class ButtonCreator(QWidget):
         super().__init__()
         self.created_buttons = {}
         self.created_streams = {}
+        self.buttons_pressed = {}
         self.button_grid_layout = QGridLayout()
         self.initUI()
         
@@ -52,7 +53,10 @@ class ButtonCreator(QWidget):
             # Limit the number of buttons to 64
             if len(self.created_buttons) < 64:
                 new_button = QPushButton(button_name, self)
+                new_button.setCheckable(True)
                 new_button.clicked.connect(self.buttonClicked)
+                new_button.setStyleSheet("background-color : lightgrey")
+                self.buttons_pressed[button_name] = 0
 
                 button_size = 50#(self.width() // self.max_columns) - 10
                 new_button.setFixedSize(button_size,button_size)
@@ -70,15 +74,34 @@ class ButtonCreator(QWidget):
         else:
             print("Button name cannot be empty or be named the same as any other buttons.")
 
+    def sendLSLData(self):
+        for button in self.buttons_pressed:
+            tag_backend.stream(button,self.buttons_pressed[button])
+
     def createStreams(self):
         print(f"Creating LSL streams for:")
         tag_backend.prepare_LSL_streaming(list(self.created_buttons.keys()))
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.sendLSLData)
+        self.timer.start(500)
         
 
     def buttonClicked(self):
         clicked_button = self.sender()
-        print(f"Button {clicked_button.text()} has been clicked")
-        tag_backend.stream(clicked_button.text())
+        
+        # if button is checked
+        if clicked_button.isChecked():
+ 
+            # setting background color to light-blue
+            clicked_button.setStyleSheet("background-color : lightblue")
+            self.buttons_pressed[clicked_button.text()] = 1
+ 
+        # if it is unchecked
+        else:
+ 
+            # set background color back to light-grey
+            clicked_button.setStyleSheet("background-color : lightgrey")
+            self.buttons_pressed[clicked_button.text()] = 0
 
 
     def keyPressEvent(self,event):
