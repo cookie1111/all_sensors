@@ -13,6 +13,7 @@ bufferSize = 4096
 
 def prepare_LSL_streaming(tags):
     print("Starting LSL streaming")
+    LSL_streams = {}
     for tag in tags:
         print(f"creating stream {tag}")
         infoTag = pylsl.StreamInfo(tag,'Tag',1,nominal_srate=2,channel_format='int32',source_id='Task_tag');

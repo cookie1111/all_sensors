@@ -106,7 +106,6 @@ class ButtonCreator(QWidget):
 
     def keyPressEvent(self,event):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
-            print("hello?")
             self.createButton()
         else:
             super().keyPressEvent(event)
